@@ -64,12 +64,16 @@ public class MainActivity extends Activity {
                 Intent intent = new Intent(MainActivity.this, InicioActivity.class);
                 startActivity(intent);
                 System.out.println("Botón de apagado presionado");
+                //agregar publish
+                publishMessage(MqttHandler.TOPIC_POWER, "0");
+                finish();
             }
         });
     }
 
+    // pasarlo a la activity de inicio para que se suscriba al principio
     private void connect() {
-        mqttHandler.connect(mqttHandler.BROKER_URL, mqttHandler.CLIENT_ID, mqttHandler.USER, mqttHandler.PASS);
+        mqttHandler.connect(MqttHandler.BROKER_URL, MqttHandler.CLIENT_ID, MqttHandler.USER, MqttHandler.PASS);
         try {
 
             Thread.sleep(1000);

@@ -21,12 +21,12 @@ public class MqttHandler implements MqttCallback {
     public static final String USER="";
     public static final String PASS="";
 
-    public static final String TOPIC_WATER_TEMP = "CoffeeXpert/agua";
-    public static final String TOPIC_COFFEE = "CoffeeXpert/cafe";
-    public static final String TOPIC_SUGAR = "CoffeeXpert/azucar";
-    public static final String TOPIC_TEA = "CoffeeXpert/te";
-    public static final String TOPIC_POWER = "CoffeeXpert/encendido";
-    public static final String TOPIC_READY = "CoffeeXpert/ready";
+    public static final String TOPIC_WATER_TEMP = "/CoffeXpert/temperatura";
+    public static final String TOPIC_COFFEE = "/CoffeXpert/cafe";
+    public static final String TOPIC_SUGAR = "/CoffeXpert/azucar";
+    public static final String TOPIC_TEA = "/CoffeXpert/te";
+    public static final String TOPIC_POWER = "/CoffeXpert/boton";
+    public static final String TOPIC_READY = "/CoffeXpert/ready";
 
     public static final String ACTION_DATA_RECEIVE ="com.example.intentservice.intent.action.DATA_RECEIVE";
     public static final String ACTION_CONNECTION_LOST ="com.example.intentservice.intent.action.CONNECTION_LOST";
@@ -92,6 +92,7 @@ public class MqttHandler implements MqttCallback {
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
+
         String msgJson=message.toString();
 
         JSONObject json = new JSONObject(message.toString());

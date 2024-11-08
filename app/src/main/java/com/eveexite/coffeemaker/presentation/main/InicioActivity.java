@@ -54,6 +54,8 @@ public class InicioActivity extends AppCompatActivity {
                 // Acción al hacer clic en el botón
                 Intent intent = new Intent(InicioActivity.this, MainActivity.class);
                 startActivity(intent);
+                //armar singleton con funciones compartidas e instanciar
+               // publishMessage(MqttHandler.TOPIC_POWER, "1");
                 System.out.println("Botón de inicio presionado");
             }
         });
