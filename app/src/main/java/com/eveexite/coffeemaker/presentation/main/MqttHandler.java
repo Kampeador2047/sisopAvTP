@@ -34,27 +34,8 @@ public class MqttHandler implements MqttCallback {
     private MqttClient client;
     private Context mContext;
 
-    // Estados de sensores
-    private boolean aguaFria = false;
-    private boolean faltaCafe = false;
-    private boolean faltaAzucar = false;
-    private boolean faltaTe = false;
-    private boolean powerOn = false; // Estado inicial de power
-
-    // Método para verificar el estado de power
-    public boolean isPowerOn() {
-        return powerOn;
-    }
-
-    // Método para actualizar el estado de power
-    public void updatePowerState(boolean state) {
-        this.powerOn = state;
-    }
-
     public MqttHandler(Context mContext){
-
         this.mContext = mContext;
-
     }
 
     public void connect( String brokerUrl, String clientId,String username, String password) {
@@ -67,19 +48,9 @@ public class MqttHandler implements MqttCallback {
 
             MemoryPersistence persistence = new MemoryPersistence();
             client = new MqttClient(brokerUrl, clientId, persistence);
-            client.setCallback(this);
             client.connect(options);
+            client.setCallback(this);
 
-            // Subscribe to all relevant topics
-            client.subscribe(TOPIC_WATER_TEMP);
-            client.subscribe(TOPIC_COFFEE);
-            client.subscribe(TOPIC_SUGAR);
-            client.subscribe(TOPIC_TEA);
-            client.subscribe(TOPIC_POWER);
-            client.subscribe(TOPIC_READY);
-
-
-            Log.d("MqttHandler", "Connected and subscribed to topics.");
         } catch (MqttException e) {
             Log.d("Aplicacion",e.getMessage()+ "  "+e.getCause());
         }
@@ -103,6 +74,13 @@ public class MqttHandler implements MqttCallback {
         }
     }
 
+    public void subscribe(String topic) {
+        try {
+            client.subscribe(topic);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void connectionLost(Throwable cause) {
@@ -114,50 +92,29 @@ public class MqttHandler implements MqttCallback {
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
-        String msgContent = message.toString();
-        Intent intent = new Intent(ACTION_DATA_RECEIVE);
+        String msgJson=message.toString();
 
-        // Interpret the message based on the topic
-        switch (topic) {
-            case TOPIC_WATER_TEMP:
-                aguaFria = msgContent.equals("Agua Fria");
-                break;
-            case TOPIC_COFFEE:
-                faltaCafe = msgContent.equals("Falta Cafe");
-                break;
-            case TOPIC_SUGAR:
-                faltaAzucar = msgContent.equals("Falta Azucar");
-                break;
-            case TOPIC_TEA:
-                faltaTe = msgContent.equals("Falta Te");
-                break;
-            case TOPIC_READY:
-                resetEstados();  // Resetear estados si todo está listo
-                break;
-            default:
-                Log.w("MqttHandler", "Unknown topic received: " + topic);
-                return;
-        }
+        JSONObject json = new JSONObject(message.toString());
 
-        intent.putExtra("mensaje", determinarMensaje());
-        mContext.sendBroadcast(intent);
+        // "1" para caliente, "0" para fría
+        String agua = json.getString("agua");
+
+        // "1" para disponible, "0" para no disponible
+        String cafe = json.getString("cafe");
+        String azucar = json.getString("azucar");
+        String te = json.getString("te");
+
+
+        Intent i = new Intent(ACTION_DATA_RECEIVE);
+        i.putExtra("msgJson", msgJson);
+        i.putExtra("agua", agua);
+        i.putExtra("cafe", cafe);
+        i.putExtra("azucar", azucar);
+        i.putExtra("te", te);
+
+        mContext.sendBroadcast(i);
+
     }
-
-    private String determinarMensaje() {
-        if (aguaFria) return "Agua fría";
-        if (faltaCafe) return "No hay café";
-        if (faltaTe) return "No hay té";
-        if (faltaAzucar) return "No hay azúcar";
-        return "Listo para usar";
-    }
-
-    private void resetEstados() {
-        aguaFria = false;
-        faltaCafe = false;
-        faltaAzucar = false;
-        faltaTe = false;
-    }
-
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
