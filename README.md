@@ -17,7 +17,7 @@ Repositorio dedicado al proyecto IoT mediante ESP32 y Android.
 | Nombre | DNI |
 |--|--|
 |  |  |
-|  |  |
+| Villegas, Lucas Ezequiel | 37792844 |
 |  |  |
 | Ocampo, Nicole Fabiana | 44.451.238 |
 
