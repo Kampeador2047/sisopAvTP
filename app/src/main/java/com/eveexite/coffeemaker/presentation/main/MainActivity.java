@@ -1,5 +1,6 @@
 package com.eveexite.coffeemaker.presentation.main;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,13 +16,10 @@ import android.widget.Toast;
 
 import com.eveexite.coffeemaker.R;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ISingletonActivities{
     private MqttHandler mqttHandler;
     private TextView vTitle;
-    private TextView txtJson;
     private ImageView imgTemp;
     private Switch switchTea;
     private Switch switchCoffee;
@@ -45,7 +43,6 @@ public class MainActivity extends Activity {
     }
 
     private void initializeView() {
-        txtJson = findViewById(R.id.txtJson);
         imgTemp = findViewById(R.id.imgTemp);
         switchTea = findViewById(R.id.switch_tea);
         switchCoffee = findViewById(R.id.switch_coffee);
@@ -53,9 +50,33 @@ public class MainActivity extends Activity {
         buttonOFF = findViewById(R.id.fabPower);
         vTitle = findViewById(R.id.vTitle);
 
+        ImageView header = findViewById(R.id.header);
+        ImageView backgroundTitle = findViewById(R.id.backgroudTitle);
+        ImageView coffeMaker = findViewById(R.id.coffeeMaker);
+
+//        switchTea.setEnabled(false);
+//        switchCoffee.setEnabled(false);
+//        switchSugar.setEnabled(false);
+
+        header.setImageResource(R.drawable.bg_header);
+        backgroundTitle.setImageResource(R.drawable.bg_msg);
+        coffeMaker.setImageResource(R.drawable.coffeemaker);
+        imgTemp.setImageResource(R.drawable.termometro_rojo);
+
+        switchCoffee.setChecked(true);
+        switchTea.setChecked(true);
+        switchSugar.setChecked(true);
         switchTea.setEnabled(false);
         switchCoffee.setEnabled(false);
         switchSugar.setEnabled(false);
+
+        // Animación de desplazamiento horizontal
+        ObjectAnimator animator = ObjectAnimator.ofFloat(vTitle, "translationX", -50f, 50f);
+        animator.setDuration(1000); // Duración de la animación
+        animator.setRepeatCount(ObjectAnimator.INFINITE); // Repetir infinitamente
+        animator.setRepeatMode(ObjectAnimator.REVERSE); // Ir y venir
+        animator.start();
+
 
         buttonOFF.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +85,7 @@ public class MainActivity extends Activity {
                 Intent intent = new Intent(MainActivity.this, InicioActivity.class);
                 startActivity(intent);
                 System.out.println("Botón de apagado presionado");
-                //agregar publish
+                // cuando se presiona el boton se publica en el topico del boton y apague
                 publishMessage(MqttHandler.TOPIC_POWER, "0");
                 finish();
             }
@@ -72,19 +93,18 @@ public class MainActivity extends Activity {
     }
 
     // pasarlo a la activity de inicio para que se suscriba al principio
-    private void connect() {
+    @Override
+    public void connect() {
         mqttHandler.connect(MqttHandler.BROKER_URL, MqttHandler.CLIENT_ID, MqttHandler.USER, MqttHandler.PASS);
         try {
 
             Thread.sleep(1000);
 
             subscribeToTopic(MqttHandler.TOPIC_WATER_TEMP);
-            subscribeToTopic(MqttHandler.TOPIC_WATER_TEMP);
+            subscribeToTopic(MqttHandler.TOPIC_READY);
             subscribeToTopic(MqttHandler.TOPIC_COFFEE);
             subscribeToTopic(MqttHandler.TOPIC_SUGAR);
             subscribeToTopic(MqttHandler.TOPIC_TEA);
-            subscribeToTopic(MqttHandler.TOPIC_POWER);
-            subscribeToTopic(MqttHandler.TOPIC_READY);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -94,7 +114,8 @@ public class MainActivity extends Activity {
 
     //Metodo que crea y configurar un broadcast receiver para comunicar el servicio que recibe los mensaje del servidor
     //con la activity principal
-    private void configBroadcastReciever()
+    @Override
+    public void configBroadcastReciever()
     {
         //se asocia(registra) la  accion RESPUESTA_OPERACION, para que cuando el Servicio de recepcion la ejecute
         //se invoque automaticamente el OnRecive del objeto receiver
@@ -116,46 +137,56 @@ public class MainActivity extends Activity {
         unregisterReceiver(receiver);
     }
 
-    private void publishMessage(String topic, String message){
+    @Override
+    public void publishMessage(String topic, String message){
         Toast.makeText(this, "Publishing message: " + message, Toast.LENGTH_SHORT).show();
         mqttHandler.publish(topic,message);
     }
 
-    private void subscribeToTopic(String topic){
+    @Override
+    public void subscribeToTopic(String topic){
         Toast.makeText(this, "Subscribing to topic "+ topic, Toast.LENGTH_SHORT).show();
         mqttHandler.subscribe(topic);
     }
 
     public class ReceptorOperacion extends BroadcastReceiver {
 
+        // pasar a texto plano
         public void onReceive(Context context, Intent intent) {
             //Se obtiene los valores que envio el servicio atraves de un intent
-            String msgJson = intent.getStringExtra("msgJson");
-            txtJson.setText(msgJson);
+            String msg = intent.getStringExtra("msg");
 
             try {
-                JSONObject jsonObject = new JSONObject(msgJson);
 
                 // Obtener valores de cada ingrediente y el estado del agua
-                boolean aguaCaliente = jsonObject.getString("agua").equals("1");
-                boolean hayCafe = jsonObject.getString("cafe").equals("1");
-                boolean hayAzucar = jsonObject.getString("azucar").equals("1");
-                boolean hayTe = jsonObject.getString("te").equals("1");
+                boolean aguaCaliente = true;
+                boolean hayCafe = true;
+                boolean hayAzucar = true;
+                boolean hayTe = true;
+                if (msg != null) {
+                    aguaCaliente = !msg.equals("Agua Fria");
+                    hayCafe = !msg.equals("Falta Cafe");
+                    hayAzucar = !msg.equals("Falta Azucar");
+                    hayTe = !msg.equals("Falta Te");
+                }
 
                 if (aguaCaliente) {
                     imgTemp.setImageResource(R.drawable.termometro_rojo);
                 } else {
                     imgTemp.setImageResource(R.drawable.termometro_azul);
                 }
+                switchTea.setEnabled(true);
+                switchCoffee.setEnabled(true);
+                switchSugar.setEnabled(true);
                 switchTea.setChecked(hayTe);
                 switchCoffee.setChecked(hayCafe);
                 switchSugar.setChecked(hayAzucar);
+                switchTea.setEnabled(false);
+                switchCoffee.setEnabled(false);
+                switchSugar.setEnabled(false);
 
                 updateTitle(aguaCaliente, hayCafe, hayAzucar, hayTe);
-
-
-            } catch (JSONException e) {
-                Toast.makeText(context, "Error al procesar los datos", Toast.LENGTH_LONG).show();
+            } catch (Exception e){
                 e.printStackTrace();
             }
         }
@@ -164,7 +195,7 @@ public class MainActivity extends Activity {
 
     private void updateTitle(boolean aguaCaliente, boolean hayCafe, boolean hayAzucar, boolean hayTe) {
         if (aguaCaliente && hayCafe && hayAzucar && hayTe) {
-            vTitle.setText(R.string.ready_to_use);
+            vTitle.setText(R.string.ready);
         } else if (!hayTe) {
             vTitle.setText(R.string.no_tea);
         } else if (!hayCafe) {

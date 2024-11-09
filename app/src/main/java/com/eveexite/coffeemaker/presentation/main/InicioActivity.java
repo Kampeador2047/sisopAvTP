@@ -1,22 +1,31 @@
 package com.eveexite.coffeemaker.presentation.main;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 
 import com.eveexite.coffeemaker.R;
 
-public class InicioActivity extends AppCompatActivity {
+public class InicioActivity extends AppCompatActivity implements ISingletonActivities {
+
+    private MqttHandler mqttHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio);
         initializeView();
+        mqttHandler = new MqttHandler(getApplicationContext());
+        connect();
+       // configBroadcastReciever();
     }
 
     @Override
@@ -54,10 +63,43 @@ public class InicioActivity extends AppCompatActivity {
                 // Acción al hacer clic en el botón
                 Intent intent = new Intent(InicioActivity.this, MainActivity.class);
                 startActivity(intent);
-                //armar singleton con funciones compartidas e instanciar
-               // publishMessage(MqttHandler.TOPIC_POWER, "1");
-                System.out.println("Botón de inicio presionado");
+                System.out.println("Botón de encendido presionado");
+                publishMessage(MqttHandler.TOPIC_POWER, "1");
+                finish();
             }
         });
+    }
+
+    @Override
+    public void connect() {
+        mqttHandler.connect(MqttHandler.BROKER_URL, MqttHandler.CLIENT_ID, MqttHandler.USER, MqttHandler.PASS);
+        //no se suscribe a ningun topico porque no recibe informacion solo envia
+    }
+
+    @Override
+    public void subscribeToTopic(String topic) {
+        Toast.makeText(this, "Subscribing to topic "+ topic, Toast.LENGTH_SHORT).show();
+        mqttHandler.subscribe(topic);
+    }
+
+    @Override
+    public void configBroadcastReciever() {
+
+    }
+
+    @Override
+    public void publishMessage(String topic, String message) {
+        Toast.makeText(this, "Publishing message: " + message, Toast.LENGTH_SHORT).show();
+        mqttHandler.publish(topic,message);
+    }
+
+
+    public class ConnectionLost extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(getApplicationContext(),"Conexion Perdida",Toast.LENGTH_SHORT).show();
+            connect();
+
+        }
+
     }
 }

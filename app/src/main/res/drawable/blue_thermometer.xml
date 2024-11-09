@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:width="100dp"
+    android:height="200dp"
+    android:viewportWidth="100"
+    android:viewportHeight="200">
+
+    <group>
+        <path
+            android:fillColor="#000000"
+            android:pathData="M 50,0 A 20,20 0 0 1 50,40 L 50,150 A 30,30 0 1 1 20,150 L 20,40 A 20,20 0 0 1 50,0"
+            android:strokeColor="#000000"
+            android:strokeWidth="4"/>
+    </group>
+
+    <!-- Fondo gris del tubo del termómetro -->
+    <path
+        android:fillColor="#B0BEC5"
+        android:pathData="M 50,5 A 15,15 0 0 1 50,35 L 50,150 A 25,25 0 1 1 25,150 L 25,35 A 15,15 0 0 1 50,5" tools:ignore="StateListReachable" />
+
+    <!-- Fondo blanco del tubo del termómetro -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 50,10 A 10,10 0 0 1 50,30 L 50,150 A 20,20 0 1 1 30,150 L 30,30 A 10,10 0 0 1 50,10"/>
+
+    <!-- Nivel de mercurio (color azul) -->
+    <path
+        android:fillColor="#00BFFF"
+        android:pathData="M 50,100 L 50,150 A 20,20 0 1 1 30,150 L 30,100 A 10,10 0 0 1 50,100"/>
+
+    <!-- Bulbo azul inferior -->
+    <path
+        android:fillColor="#00BFFF"
+        android:pathData="M 50,150 A 20,20 0 1 1 10,150 A 20,20 0 1 1 50,150"/>
+
+    <!-- Marcas del termómetro -->
+    <path
+        android:strokeColor="#000000"
+        android:strokeWidth="2"
+        android:pathData="M 55,40 H 70 M 55,60 H 70 M 55,80 H 70 M 55,100 H 70 M 55,120 H 70 M 55,140 H 70"/>
+</vector>

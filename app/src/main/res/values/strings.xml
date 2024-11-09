@@ -30,8 +30,10 @@
     <string name="no_tea">No hay té</string>
     <string name="no_coffee">No hay café</string>
     <string name="no_sugar">No hay azúcar</string>
-    <string name="water_cold">El agua está fría</string>
+    <string name="water_cold">Calentado agua sea paciente.</string>
     <string name="maquina_off">Máquina Apagada</string>
+    <string name="off">OFF</string>
+    <string name="ready">Disfrute su cafe!</string>
 
 
 </resources>

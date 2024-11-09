@@ -93,28 +93,11 @@ public class MqttHandler implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
 
-        String msgJson=message.toString();
-
-        JSONObject json = new JSONObject(message.toString());
-
-        // "1" para caliente, "0" para fría
-        String agua = json.getString("agua");
-
-        // "1" para disponible, "0" para no disponible
-        String cafe = json.getString("cafe");
-        String azucar = json.getString("azucar");
-        String te = json.getString("te");
-
-
+        String msg=message.toString();
         Intent i = new Intent(ACTION_DATA_RECEIVE);
-        i.putExtra("msgJson", msgJson);
-        i.putExtra("agua", agua);
-        i.putExtra("cafe", cafe);
-        i.putExtra("azucar", azucar);
-        i.putExtra("te", te);
 
+        i.putExtra("msg", msg);
         mContext.sendBroadcast(i);
-
     }
 
     @Override
