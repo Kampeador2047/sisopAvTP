@@ -3,7 +3,6 @@ package com.eveexite.coffeemaker.presentation.main;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +24,7 @@ public class InicioActivity extends AppCompatActivity implements ISingletonActiv
         initializeView();
         mqttHandler = new MqttHandler(getApplicationContext());
         connect();
-       // configBroadcastReciever();
+
     }
 
     @Override
@@ -60,7 +59,6 @@ public class InicioActivity extends AppCompatActivity implements ISingletonActiv
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Acción al hacer clic en el botón
                 Intent intent = new Intent(InicioActivity.this, MainActivity.class);
                 startActivity(intent);
                 System.out.println("Botón de encendido presionado");
@@ -73,7 +71,6 @@ public class InicioActivity extends AppCompatActivity implements ISingletonActiv
     @Override
     public void connect() {
         mqttHandler.connect(MqttHandler.BROKER_URL, MqttHandler.CLIENT_ID, MqttHandler.USER, MqttHandler.PASS);
-        //no se suscribe a ningun topico porque no recibe informacion solo envia
     }
 
     @Override

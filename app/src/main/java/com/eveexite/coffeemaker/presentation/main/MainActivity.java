@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,6 +32,9 @@ public class MainActivity extends Activity implements ISingletonActivities{
     private final ReceptorOperacion receiver =new ReceptorOperacion();
     private final ConnectionLost connectionLost =new ConnectionLost();
 
+    private final long DURATION= 1000;
+    private final long VIBRATION = 500;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +58,6 @@ public class MainActivity extends Activity implements ISingletonActivities{
         ImageView backgroundTitle = findViewById(R.id.backgroudTitle);
         ImageView coffeMaker = findViewById(R.id.coffeeMaker);
 
-//        switchTea.setEnabled(false);
-//        switchCoffee.setEnabled(false);
-//        switchSugar.setEnabled(false);
-
         header.setImageResource(R.drawable.bg_header);
         backgroundTitle.setImageResource(R.drawable.bg_msg);
         coffeMaker.setImageResource(R.drawable.coffeemaker);
@@ -72,7 +72,7 @@ public class MainActivity extends Activity implements ISingletonActivities{
 
         // Animación de desplazamiento horizontal
         ObjectAnimator animator = ObjectAnimator.ofFloat(vTitle, "translationX", -50f, 50f);
-        animator.setDuration(1000); // Duración de la animación
+        animator.setDuration(DURATION); // Duración de la animación
         animator.setRepeatCount(ObjectAnimator.INFINITE); // Repetir infinitamente
         animator.setRepeatMode(ObjectAnimator.REVERSE); // Ir y venir
         animator.start();
@@ -98,7 +98,7 @@ public class MainActivity extends Activity implements ISingletonActivities{
         mqttHandler.connect(MqttHandler.BROKER_URL, MqttHandler.CLIENT_ID, MqttHandler.USER, MqttHandler.PASS);
         try {
 
-            Thread.sleep(1000);
+            Thread.sleep(DURATION);
 
             subscribeToTopic(MqttHandler.TOPIC_WATER_TEMP);
             subscribeToTopic(MqttHandler.TOPIC_READY);
@@ -174,6 +174,10 @@ public class MainActivity extends Activity implements ISingletonActivities{
                     imgTemp.setImageResource(R.drawable.termometro_rojo);
                 } else {
                     imgTemp.setImageResource(R.drawable.termometro_azul);
+                    Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                    if (vibrator != null && vibrator.hasVibrator()) {
+                        vibrator.vibrate(VIBRATION);
+                    }
                 }
                 switchTea.setEnabled(true);
                 switchCoffee.setEnabled(true);
