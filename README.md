@@ -16,6 +16,7 @@ Repositorio dedicado al proyecto IoT mediante ESP32 y Android.
 ## Integrantes
 | Nombre | DNI |
 |--|--|
+| Tigani, Martin Sebastian | 32.788.835|
 |  |  |
 | Villegas, Lucas Ezequiel | 37792844 |
 |  |  |
