@@ -16,8 +16,11 @@ Repositorio dedicado al proyecto IoT mediante ESP32 y Android.
 ## Integrantes
 | Nombre | DNI |
 |--|--|
+|  Ambroso, Nahuel Oscar   | 34.575.684 |
 |  |  |
-| Villegas, Lucas Ezequiel | 37792844 |
+| Tigani, Martin Sebastian | 32.788.835|
+|  |  |
+| Villegas, Lucas Ezequiel | 37.792.844 |
 |  |  |
 | Ocampo, Nicole Fabiana | 44.451.238 |
 
