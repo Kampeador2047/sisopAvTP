@@ -71,6 +71,7 @@ public class InicioActivity extends AppCompatActivity implements ISingletonActiv
     @Override
     public void connect() {
         mqttHandler.connect(MqttHandler.BROKER_URL, MqttHandler.CLIENT_ID, MqttHandler.USER, MqttHandler.PASS);
+
     }
 
     @Override

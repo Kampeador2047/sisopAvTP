@@ -46,7 +46,7 @@
         app:layout_constraintHorizontal_bias="0.637"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/header"
-        app:layout_constraintVertical_bias="0.337"
+        app:layout_constraintVertical_bias="0.365"
         app:srcCompat="@drawable/coffeemaker" />
 
     <Switch

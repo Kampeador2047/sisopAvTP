@@ -33,7 +33,9 @@ public class MainActivity extends Activity implements ISingletonActivities{
     private final ConnectionLost connectionLost =new ConnectionLost();
 
     private final long DURATION= 1000;
-    private final long VIBRATION = 500;
+    private final long VIBRATION = 5000;
+
+
 
 
     @Override
@@ -70,29 +72,26 @@ public class MainActivity extends Activity implements ISingletonActivities{
         switchCoffee.setEnabled(false);
         switchSugar.setEnabled(false);
 
-        // Animación de desplazamiento horizontal
+
         ObjectAnimator animator = ObjectAnimator.ofFloat(vTitle, "translationX", -50f, 50f);
-        animator.setDuration(DURATION); // Duración de la animación
-        animator.setRepeatCount(ObjectAnimator.INFINITE); // Repetir infinitamente
-        animator.setRepeatMode(ObjectAnimator.REVERSE); // Ir y venir
+        animator.setDuration(DURATION);
+        animator.setRepeatCount(ObjectAnimator.INFINITE);
+        animator.setRepeatMode(ObjectAnimator.REVERSE);
         animator.start();
 
 
         buttonOFF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Acción al hacer clic en el botón de apagado
                 Intent intent = new Intent(MainActivity.this, InicioActivity.class);
                 startActivity(intent);
                 System.out.println("Botón de apagado presionado");
-                // cuando se presiona el boton se publica en el topico del boton y apague
                 publishMessage(MqttHandler.TOPIC_POWER, "0");
                 finish();
             }
         });
     }
 
-    // pasarlo a la activity de inicio para que se suscriba al principio
     @Override
     public void connect() {
         mqttHandler.connect(MqttHandler.BROKER_URL, MqttHandler.CLIENT_ID, MqttHandler.USER, MqttHandler.PASS);
@@ -112,13 +111,9 @@ public class MainActivity extends Activity implements ISingletonActivities{
 
     }
 
-    //Metodo que crea y configurar un broadcast receiver para comunicar el servicio que recibe los mensaje del servidor
-    //con la activity principal
     @Override
     public void configBroadcastReciever()
     {
-        //se asocia(registra) la  accion RESPUESTA_OPERACION, para que cuando el Servicio de recepcion la ejecute
-        //se invoque automaticamente el OnRecive del objeto receiver
         filterReceive = new IntentFilter(MqttHandler.ACTION_DATA_RECEIVE);
         filterConncetionLost = new IntentFilter(MqttHandler.ACTION_CONNECTION_LOST);
 
@@ -151,14 +146,10 @@ public class MainActivity extends Activity implements ISingletonActivities{
 
     public class ReceptorOperacion extends BroadcastReceiver {
 
-        // pasar a texto plano
         public void onReceive(Context context, Intent intent) {
-            //Se obtiene los valores que envio el servicio atraves de un intent
             String msg = intent.getStringExtra("msg");
-
             try {
 
-                // Obtener valores de cada ingrediente y el estado del agua
                 boolean aguaCaliente = true;
                 boolean hayCafe = true;
                 boolean hayAzucar = true;
