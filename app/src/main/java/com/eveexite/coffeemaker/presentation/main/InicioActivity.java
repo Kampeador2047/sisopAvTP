@@ -52,6 +52,7 @@ public class InicioActivity extends AppCompatActivity implements ISingletonActiv
     @Override
     protected void onPause() {
         super.onPause();
+        sensorManager.unregisterListener(this);
     }
 
     @Override
